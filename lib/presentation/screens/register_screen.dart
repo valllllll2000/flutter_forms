@@ -47,93 +47,50 @@ class _RegisterView extends StatelessWidget {
   }
 }
 
-class RegisterForm extends StatefulWidget {
+class RegisterForm extends StatelessWidget {
   const RegisterForm({super.key});
-
-  @override
-  State<RegisterForm> createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<RegisterForm> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final registerCubit = context.watch<RegisterCubit>();
+    final username = registerCubit.state.username;
+    final password = registerCubit.state.username;
+    final email = registerCubit.state.email;
     return Form(
-        key: _formKey,
         child: Column(
-          children: [
-            CustomTextFormField(
-              label: 'User name',
-              onChanged: (value) {
-                registerCubit.userNameChanged(value);
-                _formKey.currentState?.validate();
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty | value.trim().isEmpty) {
-                  return 'Field is mandatory';
-                }
-                if (value.length < 6) {
-                  return 'Field must have more than 6 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomTextFormField(
-              label: 'Email',
-              onChanged: (value) {
-                registerCubit.emailChanged(value);
-                _formKey.currentState?.validate();
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty | value.trim().isEmpty) {
-                  return 'Field is mandatory';
-                }
-                final emailRegExp = RegExp(
-                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                );
-                if (!emailRegExp.hasMatch(value)) {
-                  return 'Invalid email format';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomTextFormField(
-              label: 'Password',
-              onChanged: (value) {
-                registerCubit.passwordChanged(value);
-                _formKey.currentState?.validate();
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty | value.trim().isEmpty) {
-                  return 'Field is mandatory';
-                }
-                if (value.length < 6) {
-                  return 'Field must have more than 6 characters';
-                }
-                return null;
-              },
-              obscureText: true,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            FilledButton.tonalIcon(
-                onPressed: () {
-                  final isValid = _formKey.currentState!.validate();
-                  if (!isValid) return;
-                  registerCubit.onSubmit();
-                },
-                icon: const Icon(Icons.save),
-                label: const Text('Create user')),
-          ],
-        ));
+      children: [
+        CustomTextFormField(
+          label: 'User name',
+          onChanged: registerCubit.userNameChanged,
+          errorMessage: username.errorMessage,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        CustomTextFormField(
+          label: 'Email',
+          onChanged: registerCubit.emailChanged,
+          errorMessage: email.errorMessage,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        CustomTextFormField(
+          label: 'Password',
+          onChanged: registerCubit.passwordChanged,
+          errorMessage: password.errorMessage,
+          obscureText: true,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        FilledButton.tonalIcon(
+            onPressed: () {
+              registerCubit.onSubmit();
+            },
+            icon: const Icon(Icons.save),
+            label: const Text('Create user')),
+      ],
+    ));
   }
 }
